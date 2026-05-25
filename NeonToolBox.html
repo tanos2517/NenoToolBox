@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ NeonToolBox</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #050510;
+    --sidebar: #0a0a1a;
+    --card: #0d0d20;
+    --neon-pink: #ff2d95;
+    --neon-blue: #00d4ff;
+    --neon-purple: #b829e3;
+    --neon-green: #39ff14;
+    --neon-yellow: #fff700;
+    --neon-orange: #ff6e27;
+    --text: #e0e0ff;
+    --text2: #6a6a9a;
+    --border: #1a1a3e;
+    --glow-pink: 0 0 10px #ff2d95, 0 0 40px rgba(255,45,149,.3);
+    --glow-blue: 0 0 10px #00d4ff, 0 0 40px rgba(0,212,255,.3);
+    --glow-purple: 0 0 10px #b829e3, 0 0 40px rgba(184,41,227,.3);
+    --glow-green: 0 0 10px #39ff14, 0 0 40px rgba(57,255,20,.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(255,45,149,.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,212,255,.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(184,41,227,.06) 0%, transparent 50%);
+    z-index: 0;
+    animation: bgPulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgPulse {
+    0% { opacity: .5; }
+    100% { opacity: 1; }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    animation: float linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 260px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform .3s;
+    backdrop-filter: blur(10px);
+  }
+
+  .sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--neon-pink), var(--neon-blue), var(--neon-purple), var(--neon-green));
+    animation: borderGlow 4s linear infinite;
+    box-shadow: 0 0 10px rgba(0,212,255,.3);
+  }
+
+  @keyframes borderGlow {
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+
+  .sidebar h1 {
+    padding: 0 20px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShift 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes titleShift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(30deg); }
+  }
+
+  .sidebar h1 span {
+    font-size: 24px;
+    -webkit-text-fill-color: initial;
+    animation: iconPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-pink)); }
+    50% { transform: scale(1.2); filter: drop-shadow(0 0 15px var(--neon-blue)); }
+  }
+
+  .nav-section {
+    padding: 15px 20px 5px;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 0 0 10px rgba(0,212,255,.5);
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .3s;
+    text-align: left;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--neon-pink);
+    transform: scaleY(0);
+    transition: transform .3s;
+    box-shadow: 0 0 10px var(--neon-pink);
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,45,149,.08);
+    color: var(--text);
+    text-shadow: 0 0 10px rgba(255,45,149,.5);
+  }
+
+  .nav-btn:hover::before { transform: scaleY(1); }
+
+  .nav-btn.active {
+    background: rgba(255,45,149,.12);
+    color: var(--neon-pink);
+    text-shadow: 0 0 15px rgba(255,45,149,.7);
+  }
+
+  .nav-btn.active::before {
+    transform: scaleY(1);
+    background: var(--neon-pink);
+    box-shadow: 0 0 15px var(--neon-pink), 0 0 30px rgba(255,45,149,.4);
+    animation: activeGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes activeGlow {
+    0% { box-shadow: 0 0 10px var(--neon-pink); }
+    100% { box-shadow: 0 0 20px var(--neon-pink), 0 0 40px rgba(255,45,149,.3); }
+  }
+
+  .nav-btn .icon { font-size: 16px; width: 24px; text-align: center; }
+
+  /* ===== MAIN ===== */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 30px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tool-page { display: none; }
+  .tool-page.active {
+    display: block;
+    animation: neonFadeIn .5s ease-out;
+  }
+
+  @keyframes neonFadeIn {
+    from { opacity: 0; transform: translateY(20px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .tool-page h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 20px rgba(0,212,255,.5);
+    animation: neonText 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes neonText {
+    0% { text-shadow: 0 0 10px rgba(0,212,255,.3), 0 0 20px rgba(0,212,255,.1); }
+    100% { text-shadow: 0 0 20px rgba(0,212,255,.6), 0 0 40px rgba(0,212,255,.2), 0 0 80px rgba(0,212,255,.1); }
+  }
+
+  .tool-page .subtitle {
+    color: var(--text2);
+    margin-bottom: 25px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all .4s;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-blue), transparent);
+    animation: cardShimmer 3s linear infinite;
+  }
+
+  @keyframes cardShimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+
+  .card:hover {
+    border-color: rgba(0,212,255,.3);
+    box-shadow: 0 0 30px rgba(0,212,255,.08), inset 0 0 30px rgba(0,212,255,.03);
+    transform: translateY(-2px);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ===== FORM ELEMENTS ===== */
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--neon-blue);
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(0,212,255,.3);
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(5,5,16,.8);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Rajdhani', sans-serif;
+    outline: none;
+    transition: all .3s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0,212,255,.2), inset 0 0 15px rgba(0,212,255,.05);
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    border: none;
+    padding: 0;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--neon-pink);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-pink), 0 0 20px rgba(255,45,149,.4);
+    animation: thumbPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes thumbPulse {
+    0%, 100% { box-shadow: 0 0 10px var(--neon-pink); }
+    50% { box-shadow: 0 0 20px var(--neon-pink), 0 0 40px rgba(255,45,149,.5); }
+  }
+
+  input[type="color"] {
+    -webkit-appearance: none;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    padding: 4px;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+  input[type="color"]::-webkit-color-swatch { border-radius: 8px; border: 2px solid var(--neon-purple); }
+
+  input[type="checkbox"] {
+    accent-color: var(--neon-pink);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  /* ===== BUTTONS ===== */
+  button.btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .3s;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+
+  button.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: rgba(255,255,255,.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width .6s, height .6s;
+  }
+
+  button.btn:active::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255,45,149,.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 25px rgba(255,45,149,.5), 0 0 50px rgba(255,45,149,.2);
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, var(--neon-green), #00cc44);
+    color: #000;
+    box-shadow: 0 0 15px rgba(57,255,20,.3);
+  }
+  .btn-success:hover {
+    box-shadow: 0 0 25px rgba(57,255,20,.5), 0 0 50px rgba(57,255,20,.2);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink));
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255,110,39,.3);
+  }
+  .btn-danger:hover {
+    box-shadow: 0 0 25px rgba(255,110,39,.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange));
+    color: #000;
+    box-shadow: 0 0 15px rgba(255,247,0,.3);
+  }
+  .btn-warning:hover {
+    box-shadow: 0 0 25px rgba(255,247,0,.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 5px rgba(0,212,255,.1);
+  }
+  .btn-outline:hover {
+    background: rgba(0,212,255,.1);
+    box-shadow: 0 0 20px rgba(0,212,255,.3), inset 0 0 20px rgba(0,212,255,.05);
+    transform: translateY(-2px);
+  }
+
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* ===== RESULT BOX ===== */
+  .result-box {
+    background: rgba(5,5,16,.9);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    min-height: 40px;
+    word-break: break-all;
+    white-space: pre-wrap;
+    position: relative;
+    transition: all .3s;
+  }
+
+  .result-box:focus-within,
+  .result-box:hover {
+    border-color: rgba(0,212,255,.3);
+    box-shadow: 0 0 20px rgba(0,212,255,.1);
+  }
+
+  .result-box .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--neon-pink);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,45,149,.4);
+    transition: all .3s;
+  }
+
+  .result-box .copy-btn:hover {
+    box-shadow: 0 0 20px rgba(255,45,149,.6);
+    transform: scale(1.05);
+  }
+
+  /* ===== CALCULATOR ===== */
+  .calc-display {
+    background: rgba(5,5,16,.9);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: right;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-display::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+    animation: calcLine 2s linear infinite;
+  }
+
+  @keyframes calcLine {
+    0% { opacity: .3; }
+    50% { opacity: 1; }
+    100% { opacity: .3; }
+  }
+
+  .calc-display .expr { color: var(--text2); font-size: 14px; min-height: 20px; }
+  .calc-display .value {
+    font-size: 36px;
+    font-weight: 700;
+    margin-top: 5px;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-blue);
+    text-shadow: 0 0 20px rgba(0,212,255,.5);
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .calc-btn {
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .calc-btn:active { transform: scale(.93); }
+
+  .calc-btn.num {
+    background: rgba(13,13,32,.8);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .calc-btn.num:hover {
+    background: rgba(0,212,255,.1);
+    border-color: rgba(0,212,255,.3);
+    box-shadow: 0 0 15px rgba(0,212,255,.15);
+    color: var(--neon-blue);
+  }
+
+  .calc-btn.op {
+    background: rgba(255,45,149,.1);
+    color: var(--neon-pink);
+    border: 1px solid rgba(255,45,149,.2);
+  }
+  .calc-btn.op:hover {
+    background: rgba(255,45,149,.2);
+    box-shadow: 0 0 20px rgba(255,45,149,.2);
+  }
+
+  .calc-btn.eq {
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255,45,149,.3);
+  }
+  .calc-btn.eq:hover {
+    box-shadow: 0 0 30px rgba(255,45,149,.5);
+    transform: translateY(-2px);
+  }
+
+  .calc-btn.clear {
+    background: rgba(255,110,39,.1);
+    color: var(--neon-orange);
+    border: 1px solid rgba(255,110,39,.2);
+  }
+  .calc-btn.clear:hover {
+    background: rgba(255,110,39,.2);
+    box-shadow: 0 0 20px rgba(255,110,39,.2);
+  }
+
+  .calc-btn.wide { grid-column: span 2; }
+
+  /* ===== TIMER ===== */
+  .timer-display {
+    font-size: 64px;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    background: rgba(5,5,16,.9);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+    margin: 15px 0;
+    letter-spacing: 3px;
+    color: var(--neon-blue);
+    text-shadow: 0 0 20px rgba(0,212,255,.5);
+    transition: all .3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timer-display::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,.05), transparent);
+    animation: timerSweep 3s linear infinite;
+  }
+
+  @keyframes timerSweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .timer-display.running {
+    color: var(--neon-green);
+    text-shadow: 0 0 20px rgba(57,255,20,.5);
+    border-color: rgba(57,255,20,.3);
+    box-shadow: 0 0 30px rgba(57,255,20,.1), inset 0 0 30px rgba(57,255,20,.03);
+    animation: timerPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes timerPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(57,255,20,.1); }
+    50% { box-shadow: 0 0 40px rgba(57,255,20,.2), inset 0 0 40px rgba(57,255,20,.05); }
+  }
+
+  .timer-display.paused {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 20px rgba(255,247,0,.5);
+    border-color: rgba(255,247,0,.3);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+  }
+
+  /* ===== COLOR PREVIEW ===== */
+  .color-preview {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    border: 2px solid var(--neon-purple);
+    margin-bottom: 15px;
+    transition: all .3s;
+    box-shadow: 0 0 20px rgba(184,41,227,.2);
+  }
+
+  /* ===== TODO ===== */
+  .todo-input-row { display: flex; gap: 8px; margin-bottom: 15px; }
+  .todo-input-row input { flex: 1; }
+
+  .todo-list { list-style: none; }
+  .todo-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(5,5,16,.8);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: all .3s;
+  }
+
+  .todo-list li:hover {
+    border-color: rgba(255,45,149,.3);
+    box-shadow: 0 0 15px rgba(255,45,149,.1);
+  }
+
+  .todo-list li.done { opacity: .5; border-color: rgba(57,255,20,.2); }
+  .todo-list li.done .todo-text { text-decoration: line-through; color: var(--neon-green); }
+  .todo-text { flex: 1; font-size: 14px; }
+
+  .todo-del {
+    background: none; border: none; color: var(--neon-pink);
+    cursor: pointer; font-size: 16px; padding: 4px;
+    transition: all .3s;
+  }
+  .todo-del:hover {
+    text-shadow: 0 0 10px var(--neon-pink);
+    transform: scale(1.2);
+  }
+
+  .todo-check {
+    width: 18px; height: 18px; accent-color: var(--neon-pink); cursor: pointer;
+  }
+
+  /* ===== NOTES ===== */
+  .notes-area {
+    width: 100%;
+    min-height: 300px;
+    background: rgba(5,5,16,.9);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Rajdhani', sans-serif;
+    line-height: 1.7;
+    resize: vertical;
+    transition: all .3s;
+  }
+
+  .notes-area:focus {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 20px rgba(184,41,227,.15), inset 0 0 20px rgba(184,41,227,.03);
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .stat-item {
+    background: rgba(5,5,16,.8);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    transition: all .3s;
+  }
+
+  .stat-item:hover {
+    border-color: rgba(0,212,255,.3);
+    box-shadow: 0 0 15px rgba(0,212,255,.1);
+  }
+
+  .stat-item .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(0,212,255,.5);
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  /* ===== POMODORO ===== */
+  .pomo-display {
+    font-size: 80px;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    margin: 20px 0;
+    color: var(--neon-pink);
+    text-shadow: 0 0 30px rgba(255,45,149,.5);
+    animation: pomoGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pomoGlow {
+    0% { text-shadow: 0 0 20px rgba(255,45,149,.3); }
+    100% { text-shadow: 0 0 40px rgba(255,45,149,.6), 0 0 80px rgba(255,45,149,.2); }
+  }
+
+  .pomo-label {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+  }
+
+  /* ===== QR ===== */
+  .qr-container { text-align: center; }
+  .qr-container img {
+    max-width: 200px;
+    border-radius: 10px;
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 20px rgba(57,255,20,.2);
+    transition: all .3s;
+  }
+  .qr-container img:hover {
+    box-shadow: 0 0 40px rgba(57,255,20,.4);
+    transform: scale(1.05);
+  }
+
+  /* ===== BMI ===== */
+  .bmi-gauge {
+    height: 20px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--neon-green) 0%, var(--neon-green) 25%, var(--neon-yellow) 25%, var(--neon-yellow) 50%, var(--neon-orange) 50%, var(--neon-orange) 75%, var(--neon-pink) 75%, var(--neon-pink) 100%);
+    position: relative;
+    margin: 15px 0;
+    box-shadow: 0 0 15px rgba(57,255,20,.2);
+  }
+
+  .bmi-marker {
+    position: absolute;
+    top: -6px;
+    width: 4px;
+    height: 32px;
+    background: #fff;
+    border-radius: 2px;
+    transition: left .5s;
+    box-shadow: 0 0 10px #fff, 0 0 20px rgba(255,255,255,.5);
+  }
+
+  .bmi-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* ===== HASH TABS ===== */
+  .hash-tabs { display: flex; gap: 5px; margin-bottom: 12px; }
+  .hash-tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Orbitron', sans-serif;
+    transition: all .3s;
+  }
+  .hash-tab:hover { border-color: var(--neon-blue); color: var(--neon-blue); }
+  .hash-tab.active {
+    background: var(--neon-pink);
+    color: #fff;
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255,45,149,.4);
+  }
+
+  /* ===== LOREM ===== */
+  .lorem-output {
+    line-height: 1.8;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  /* ===== MARKDOWN ===== */
+  #mdPreview h1 { color: var(--neon-pink); text-shadow: 0 0 10px rgba(255,45,149,.5); font-family: 'Orbitron', sans-serif; }
+  #mdPreview h2 { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,212,255,.5); font-family: 'Orbitron', sans-serif; }
+  #mdPreview h3 { color: var(--neon-purple); }
+  #mdPreview b { color: var(--neon-pink); }
+  #mdPreview i { color: var(--neon-blue); }
+  #mdPreview li { list-style: none; position: relative; padding-left: 15px; }
+  #mdPreview li::before { content: '▹'; color: var(--neon-green); position: absolute; left: 0; }
+
+  /* ===== FLEX ===== */
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--neon-pink), var(--neon-blue));
+    border-radius: 3px;
+  }
+
+  /* ===== MOBILE ===== */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px; left: 15px;
+    z-index: 200;
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,45,149,.4);
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 90;
+    backdrop-filter: blur(5px);
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .overlay.open { display: block; }
+    .menu-toggle { display: block; }
+    .main { margin-left: 0; padding: 20px; padding-top: 60px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .timer-display { font-size: 40px; }
+    .pomo-display { font-size: 50px; }
+    .calc-display .value { font-size: 28px; }
+  }
+
+  /* ===== NEON LINE SEPARATOR ===== */
+  .neon-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-blue), transparent);
+    margin: 20px 0;
+    opacity: .5;
+  }
+
+  /* ===== PASSWORD STRENGTH ===== */
+  #pwStrength {
+    transition: all .5s;
+    box-shadow: 0 0 10px currentColor;
+  }
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<button class="menu-toggle" onclick="toggleSidebar()">⚡</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <h1><span>⚡</span> NEON TOOLBOX</h1>
+
+  <div class="nav-section">Математика</div>
+  <button class="nav-btn active" onclick="showTool('calculator')"><span class="icon">🧮</span> Калькулятор</button>
+  <button class="nav-btn" onclick="showTool('percentcalc')"><span class="icon">📊</span> Калькулятор %</button>
+  <button class="nav-btn" onclick="showTool('bmi')"><span class="icon">⚖️</span> ИМТ калькулятор</button>
+  <button class="nav-btn" onclick="showTool('agecalc')"><span class="icon">🎂</span> Калькулятор возраста</button>
+  <button class="nav-btn" onclick="showTool('numconv')"><span class="icon">🔢</span> Системы счисления</button>
+
+  <div class="nav-section">Конвертеры</div>
+  <button class="nav-btn" onclick="showTool('unitconv')"><span class="icon">📏</span> Единицы измерения</button>
+  <button class="nav-btn" onclick="showTool('colorconv')"><span class="icon">🎨</span> Конвертер цветов</button>
+  <button class="nav-btn" onclick="showTool('base64')"><span class="icon">🔐</span> Base64</button>
+  <button class="nav-btn" onclick="showTool('urltool')"><span class="icon">🔗</span> URL кодирование</button>
+
+  <div class="nav-section">Текст</div>
+  <button class="nav-btn" onclick="showTool('texttool')"><span class="icon">✏️</span> Текст утилиты</button>
+  <button class="nav-btn" onclick="showTool('lorem')"><span class="icon">📝</span> Lorem Ipsum</button>
+  <button class="nav-btn" onclick="showTool('markdown')"><span class="icon">📄</span> Markdown</button>
+
+  <div class="nav-section">Время</div>
+  <button class="nav-btn" onclick="showTool('timer')"><span class="icon">⏱️</span> Секундомер</button>
+  <button class="nav-btn" onclick="showTool('pomodoro')"><span class="icon">🍅</span> Pomodoro</button>
+  <button class="nav-btn" onclick="showTool('unixtime')"><span class="icon">🕐</span> Unix время</button>
+
+  <div class="nav-section">Генераторы</div>
+  <button class="nav-btn" onclick="showTool('password')"><span class="icon">🔑</span> Пароли</button>
+  <button class="nav-btn" onclick="showTool('random')"><span class="icon">🎲</span> Случайные числа</button>
+  <button class="nav-btn" onclick="showTool('uuid')"><span class="icon">🆔</span> UUID</button>
+  <button class="nav-btn" onclick="showTool('qrgen')"><span class="icon">📱</span> QR-код</button>
+  <button class="nav-btn" onclick="showTool('hash')"><span class="icon">#️⃣</span> Хеш</button>
+
+  <div class="nav-section">Органайзер</div>
+  <button class="nav-btn" onclick="showTool('todo')"><span class="icon">✅</span> To-Do лист</button>
+  <button class="nav-btn" onclick="showTool('notes')"><span class="icon">📒</span> Заметки</button>
+  <button class="nav-btn" onclick="showTool('json')"><span class="icon">{ }</span> JSON формат</button>
+</aside>
+
+<main class="main">
+
+  <!-- ==================== CALCULATOR ==================== -->
+  <div class="tool-page active" id="tool-calculator">
+    <h2>🧮 Калькулятор</h2>
+    <p class="subtitle">// Быстрые вычисления в неоновом стиле</p>
+    <div class="card" style="max-width:400px;">
+      <div class="calc-display">
+        <div class="expr" id="calcExpr"></div>
+        <div class="value" id="calcValue">0</div>
+      </div>
+      <div class="calc-grid">
+        <button class="calc-btn clear" onclick="calcClear()">C</button>
+        <button class="calc-btn op" onclick="calcInput('(')">(</button>
+        <button class="calc-btn op" onclick="calcInput(')')">)</button>
+        <button class="calc-btn op" onclick="calcInput('/')">÷</button>
+        <button class="calc-btn num" onclick="calcInput('7')">7</button>
+        <button class="calc-btn num" onclick="calcInput('8')">8</button>
+        <button class="calc-btn num" onclick="calcInput('9')">9</button>
+        <button class="calc-btn op" onclick="calcInput('*')">×</button>
+        <button class="calc-btn num" onclick="calcInput('4')">4</button>
+        <button class="calc-btn num" onclick="calcInput('5')">5</button>
+        <button class="calc-btn num" onclick="calcInput('6')">6</button>
+        <button class="calc-btn op" onclick="calcInput('-')">−</button>
+        <button class="calc-btn num" onclick="calcInput('1')">1</button>
+        <button class="calc-btn num" onclick="calcInput('2')">2</button>
+        <button class="calc-btn num" onclick="calcInput('3')">3</button>
+        <button class="calc-btn op" onclick="calcInput('+')">+</button>
+        <button class="calc-btn num" onclick="calcInput('0')">0</button>
+        <button class="calc-btn num" onclick="calcInput('.')">.</button>
+        <button class="calc-btn eq wide" onclick="calcEval()">=</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PERCENT CALC ==================== -->
+  <div class="tool-page" id="tool-percentcalc">
+    <h2>📊 Калькулятор процентов</h2>
+    <p class="subtitle">// Вычисление процентов и процентных изменений</p>
+    <div class="grid-2">
+      <div class="card">
+        <label>X% от Y</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="pctX" placeholder="%" style="width:80px;">
+          <span style="color:var(--neon-pink);">%</span>
+          <input type="number" id="pctY" placeholder="число">
+          <button class="btn btn-primary" onclick="calcPercent()">=</button>
+        </div>
+        <div class="result-box" id="pctResult">—</div>
+      </div>
+      <div class="card">
+        <label>X — это сколько % от Y?</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="pctA" placeholder="число" style="width:100px;">
+          <input type="number" id="pctB" placeholder="число">
+          <button class="btn btn-primary" onclick="calcPercentOf()">=</button>
+        </div>
+        <div class="result-box" id="pctResult2">—</div>
+      </div>
+      <div class="card">
+        <label>Процентное изменение</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="pctFrom" placeholder="от" style="width:100px;">
+          <span style="color:var(--neon-blue);">→</span>
+          <input type="number" id="pctTo" placeholder="до">
+          <button class="btn btn-primary" onclick="calcPercentChange()">=</button>
+        </div>
+        <div class="result-box" id="pctResult3">—</div>
+      </div>
+      <div class="card">
+        <label>Прибавить / вычесть %</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input type="number" id="pctNum" placeholder="число" style="width:100px;">
+          <button class="btn btn-success" onclick="calcPctAdd()">+ %</button>
+          <button class="btn btn-danger" onclick="calcPctSub()">− %</button>
+          <input type="number" id="pctRate" placeholder="%" style="width:80px;">
+        </div>
+        <div class="result-box" id="pctResult4">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BMI ==================== -->
+  <div class="tool-page" id="tool-bmi">
+    <h2>⚖️ Калькулятор ИМТ</h2>
+    <p class="subtitle">// Индекс массы тела — оценка соответствия веса и роста</p>
+    <div class="card" style="max-width:500px;">
+      <div class="grid-2">
+        <div>
+          <label>Рост (см)</label>
+          <input type="number" id="bmiH" placeholder="175">
+        </div>
+        <div>
+          <label>Вес (кг)</label>
+          <input type="number" id="bmiW" placeholder="70">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcBMI()">Рассчитать ИМТ</button>
+      </div>
+      <div class="bmi-gauge"><div class="bmi-marker" id="bmiMarker" style="left:0%"></div></div>
+      <div class="bmi-labels"><span>16</span><span>18.5</span><span>25</span><span>30</span><span>40</span></div>
+      <div class="result-box" id="bmiResult">Введите данные</div>
+    </div>
+  </div>
+
+  <!-- ==================== AGE CALC ==================== -->
+  <div class="tool-page" id="tool-agecalc">
+    <h2>🎂 Калькулятор возраста</h2>
+    <p class="subtitle">// Точный возраст по дате рождения</p>
+    <div class="card" style="max-width:400px;">
+      <label>Дата рождения</label>
+      <input type="date" id="ageDate">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="calcAge()">Рассчитать</button>
+      </div>
+      <div class="result-box" id="ageResult">—</div>
+    </div>
+  </div>
+
+  <!-- ==================== NUMBER SYSTEMS ==================== -->
+  <div class="tool-page" id="tool-numconv">
+    <h2>🔢 Конвертер систем счисления</h2>
+    <p class="subtitle">// Перевод между DEC, BIN, HEX, OCT</p>
+    <div class="card" style="max-width:500px;">
+      <label>Введите число</label>
+      <input type="text" id="numInput" placeholder="42" oninput="convertNum()">
+      <div class="grid-2" style="margin-top:15px;">
+        <div>
+          <label>Система ввода</label>
+          <select id="numFrom" onchange="convertNum()">
+            <option value="10">DEC (10)</option>
+            <option value="2">BIN (2)</option>
+            <option value="16">HEX (16)</option>
+            <option value="8">OCT (8)</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box" id="numResult">—</div>
+    </div>
+  </div>
+
+  <!-- ==================== UNIT CONVERTER ==================== -->
+  <div class="tool-page" id="tool-unitconv">
+    <h2>📏 Конвертер единиц</h2>
+    <p class="subtitle">// Длина, вес, температура, скорость, объём, данные</p>
+    <div class="card" style="max-width:500px;">
+      <label>Категория</label>
+      <select id="unitCat" onchange="updateUnits()">
+        <option value="length">📏 Длина</option>
+        <option value="weight">⚖️ Вес</option>
+        <option value="temp">🌡️ Температура</option>
+        <option value="speed">🏎️ Скорость</option>
+        <option value="volume">🧪 Объём</option>
+        <option value="data">💾 Данные</option>
+      </select>
+      <div class="grid-2" style="margin-top:15px;">
+        <div>
+          <label>Из</label>
+          <select id="unitFrom"></select>
+        </div>
+        <div>
+          <label>В</label>
+          <select id="unitTo"></select>
+        </div>
+      </div>
+      <div style="margin-top:15px;">
+        <label>Значение</label>
+        <input type="number" id="unitVal" placeholder="1" oninput="convertUnit()">
+      </div>
+      <div class="result-box" id="unitResult">—</div>
+    </div>
+  </div>
+
+  <!-- ==================== COLOR CONVERTER ==================== -->
+  <div class="tool-page" id="tool-colorconv">
+    <h2>🎨 Конвертер цветов</h2>
+    <p class="subtitle">// Конвертация между HEX, RGB и HSL</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="color-preview" id="colorPreview" style="background:#b829e3;box-shadow:0 0 30px rgba(184,41,227,.3);"></div>
+        <label>HEX</label>
+        <input type="text" id="colorHex" value="#b829e3" oninput="colorFromHex()" maxlength="7">
+        <label style="margin-top:10px;">RGB</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="colorR" value="184" min="0" max="255" oninput="colorFromRGB()" placeholder="R">
+          <input type="number" id="colorG" value="41" min="0" max="255" oninput="colorFromRGB()" placeholder="G">
+          <input type="number" id="colorB" value="227" min="0" max="255" oninput="colorFromRGB()" placeholder="B">
+        </div>
+        <label style="margin-top:10px;">HSL</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="colorH" value="286" oninput="colorFromHSL()" placeholder="H">
+          <input type="number" id="colorS" value="74" oninput="colorFromHSL()" placeholder="S">
+          <input type="number" id="colorL" value="53" oninput="colorFromHSL()" placeholder="L">
+        </div>
+      </div>
+      <div class="card">
+        <label>Выберите цвет</label>
+        <input type="color" id="colorPicker" value="#b829e3" oninput="colorFromPicker()" style="width:100%;height:60px;border:none;cursor:pointer;">
+        <div class="result-box" id="colorInfo" style="margin-top:15px;">
+          HEX: #b829e3
+          RGB: rgb(184, 41, 227)
+          HSL: hsl(286, 74%, 53%)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BASE64 ==================== -->
+  <div class="tool-page" id="tool-base64">
+    <h2>🔐 Base64</h2>
+    <p class="subtitle">// Кодирование и декодирование Base64</p>
+    <div class="card">
+      <label>Текст</label>
+      <textarea id="b64Input" rows="4" placeholder="Введите текст..."></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="b64Encode()">Кодировать →</button>
+        <button class="btn btn-success" onclick="b64Decode()">← Декодировать</button>
+      </div>
+      <label style="margin-top:15px;">Результат</label>
+      <textarea id="b64Output" rows="4" readonly></textarea>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="copyText('b64Output')">📋 Копировать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== URL TOOL ==================== -->
+  <div class="tool-page" id="tool-urltool">
+    <h2>🔗 URL кодирование</h2>
+    <p class="subtitle">// Encode / Decode URL компонентов</p>
+    <div class="card">
+      <label>Текст / URL</label>
+      <textarea id="urlInput" rows="3" placeholder="https://example.com?q=привет мир"></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="urlEncode()">Encode →</button>
+        <button class="btn btn-success" onclick="urlDecode()">← Decode</button>
+      </div>
+      <label style="margin-top:15px;">Результат</label>
+      <textarea id="urlOutput" rows="3" readonly></textarea>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="copyText('urlOutput')">📋 Копировать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TEXT TOOLS ==================== -->
+  <div class="tool-page" id="tool-texttool">
+    <h2>✏️ Текст утилиты</h2>
+    <p class="subtitle">// Трансформация, подсчёт слов, символов и строк</p>
+    <div class="card">
+      <label>Введите текст</label>
+      <textarea id="textInput" rows="5" placeholder="Ваш текст здесь..." oninput="updateTextStats()"></textarea>
+      <div class="stats-bar" id="textStats">
+        <div class="stat-item"><div class="val" id="statChars">0</div>Символов</div>
+        <div class="stat-item"><div class="val" id="statWords">0</div>Слов</div>
+        <div class="stat-item"><div class="val" id="statLines">0</div>Строк</div>
+        <div class="stat-item"><div class="val" id="statSent">0</div>Предложений</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="textTransform('upper')">ВЕРХНИЙ</button>
+        <button class="btn btn-primary" onclick="textTransform('lower')">нижний</button>
+        <button class="btn btn-primary" onclick="textTransform('title')">Заголовок</button>
+        <button class="btn btn-primary" onclick="textTransform('sentence')">Предложения</button>
+        <button class="btn btn-outline" onclick="textTransform('reverse')">Реверс</button>
+        <button class="btn btn-outline" onclick="textTransform('trim')">Trim</button>
+        <button class="btn btn-warning" onclick="textTransform('slug')">slug-text</button>
+      </div>
+      <label style="margin-top:15px;">Результат</label>
+      <textarea id="textOutput" rows="4" readonly></textarea>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="copyText('textOutput')">📋 Копировать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOREM IPSUM ==================== -->
+  <div class="tool-page" id="tool-lorem">
+    <h2>📝 Lorem Ipsum генератор</h2>
+    <p class="subtitle">// Генерация текста-заполнителя</p>
+    <div class="card">
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label>Количество</label>
+          <input type="number" id="loremCount" value="3" min="1" max="50" style="width:80px;">
+        </div>
+        <div>
+          <label>Тип</label>
+          <select id="loremType">
+            <option value="paragraphs">Абзацы</option>
+            <option value="sentences">Предложения</option>
+            <option value="words">Слова</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="genLorem()">Генерировать</button>
+      </div>
+      <div class="result-box lorem-output" id="loremOutput" style="margin-top:15px;"></div>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="copyEl('loremOutput')">📋 Копировать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MARKDOWN ==================== -->
+  <div class="tool-page" id="tool-markdown">
+    <h2>📄 Markdown превью</h2>
+    <p class="subtitle">// Простой редактор с live-превью</p>
+    <div class="grid-2">
+      <div class="card">
+        <label>Markdown</label>
+        <textarea id="mdInput" rows="15" oninput="renderMD()" placeholder="# Заголовок
+**Жирный** *Курсив*
+- Список
+> Цитата
+`код`"></textarea>
+      </div>
+      <div class="card">
+        <label>Превью</label>
+        <div id="mdPreview" style="min-height:300px;padding:10px;line-height:1.8;">
+          <span style="color:var(--text2)">Здесь будет превью...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TIMER ==================== -->
+  <div class="tool-page" id="tool-timer">
+    <h2>⏱️ Секундомер</h2>
+    <p class="subtitle">// Точный секундомер с кругами</p>
+    <div class="card" style="text-align:center;">
+      <div class="timer-display" id="timerDisplay">00:00:00.000</div>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn btn-success" id="timerStartBtn" onclick="timerStart()">▶ Старт</button>
+        <button class="btn btn-warning" onclick="timerLap()">🏁 Круг</button>
+        <button class="btn btn-danger" onclick="timerReset()">⏹ Сброс</button>
+      </div>
+      <div id="laps" style="margin-top:15px;text-align:left;"></div>
+    </div>
+  </div>
+
+  <!-- ==================== POMODORO ==================== -->
+  <div class="tool-page" id="tool-pomodoro">
+    <h2>🍅 Pomodoro таймер</h2>
+    <p class="subtitle">// Метод Pomodoro: 25 мин работы + 5 мин отдыха</p>
+    <div class="card" style="text-align:center;max-width:400px;margin:0 auto;">
+      <div class="pomo-label" id="pomoLabel">⚡ ВРЕМЯ РАБОТАТЬ</div>
+      <div class="pomo-display" id="pomoDisplay">25:00</div>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn btn-success" id="pomoStartBtn" onclick="pomoToggle()">▶ Старт</button>
+        <button class="btn btn-danger" onclick="pomoReset()">⏹ Сброс</button>
+      </div>
+      <div style="margin-top:15px;">
+        <label>Работа (мин)</label>
+        <input type="number" id="pomoWork" value="25" min="1" max="90" style="width:80px;display:inline;">
+        <label style="margin-top:8px;">Отдых (мин)</label>
+        <input type="number" id="pomoBreak" value="5" min="1" max="30" style="width:80px;display:inline;">
+      </div>
+      <div class="result-box" id="pomoSessions" style="margin-top:10px;">Завершено: 0 сессий</div>
+    </div>
+  </div>
+
+  <!-- ==================== UNIX TIME ==================== -->
+  <div class="tool-page" id="tool-unixtime">
+    <h2>🕐 Unix время</h2>
+    <p class="subtitle">// Конвертация Unix timestamp в дату и обратно</p>
+    <div class="grid-2">
+      <div class="card">
+        <label>Текущий Unix timestamp</label>
+        <div class="result-box" id="unixNow" style="font-size:20px;font-weight:700;color:var(--neon-green);text-shadow:0 0 10px rgba(57,255,20,.5);">—</div>
+        <label style="margin-top:10px;">Текущая дата/время</label>
+        <div class="result-box" id="unixNowDate">—</div>
+      </div>
+      <div class="card">
+        <label>Timestamp → Дата</label>
+        <input type="number" id="unixInput" placeholder="1700000000">
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="unixToDate()">Конвертировать</button>
+        </div>
+        <div class="result-box" id="unixDateResult">—</div>
+        <label style="margin-top:10px;">Дата → Timestamp</label>
+        <input type="datetime-local" id="unixDateInput">
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="dateToUnix()">Конвертировать</button>
+        </div>
+        <div class="result-box" id="unixTsResult">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PASSWORD ==================== -->
+  <div class="tool-page" id="tool-password">
+    <h2>🔑 Генератор паролей</h2>
+    <p class="subtitle">// Создание надёжных паролей</p>
+    <div class="card" style="max-width:500px;">
+      <label>Длина: <span id="pwLenVal">16</span></label>
+      <input type="range" id="pwLen" min="4" max="64" value="16" oninput="document.getElementById('pwLenVal').textContent=this.value">
+      <div style="margin-top:15px;">
+        <label><input type="checkbox" id="pwUpper" checked> A-Z (Заглавные)</label>
+        <label><input type="checkbox" id="pwLower" checked> a-z (Строчные)</label>
+        <label><input type="checkbox" id="pwNum" checked> 0-9 (Цифры)</label>
+        <label><input type="checkbox" id="pwSym" checked> !@#$%^&* (Символы)</label>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="genPassword()">Генерировать</button>
+      </div>
+      <div class="result-box" id="pwResult">
+        <button class="copy-btn" onclick="copyText('pwResult')">📋</button>
+        Нажмите «Генерировать»
+      </div>
+      <div style="margin-top:10px;">
+        <label>Надёжность</label>
+        <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;">
+          <div id="pwStrength" style="height:100%;width:0%;transition:all .3s;border-radius:4px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RANDOM ==================== -->
+  <div class="tool-page" id="tool-random">
+    <h2>🎲 Генератор случайных чисел</h2>
+    <p class="subtitle">// Случайные числа в заданном диапазоне</p>
+    <div class="card" style="max-width:400px;">
+      <div class="grid-2">
+        <div><label>От</label><input type="number" id="randMin" value="1"></div>
+        <div><label>До</label><input type="number" id="randMax" value="100"></div>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Количество</label>
+        <input type="number" id="randCount" value="1" min="1" max="50">
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="genRandom()">🎲 Генерировать</button>
+      </div>
+      <div class="result-box" id="randResult">—</div>
+    </div>
+  </div>
+
+  <!-- ==================== UUID ==================== -->
+  <div class="tool-page" id="tool-uuid">
+    <h2>🆔 Генератор UUID</h2>
+    <p class="subtitle">// Генерация уникальных идентификаторов (UUID v4)</p>
+    <div class="card" style="max-width:500px;">
+      <label>Количество</label>
+      <input type="number" id="uuidCount" value="5" min="1" max="50" style="width:80px;">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="genUUID()">Генерировать</button>
+      </div>
+      <div class="result-box" id="uuidResult" style="font-size:13px;">
+        <button class="copy-btn" onclick="copyText('uuidResult')">📋</button>
+        Нажмите «Генерировать»
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== QR CODE ==================== -->
+  <div class="tool-page" id="tool-qrgen">
+    <h2>📱 Генератор QR-кодов</h2>
+    <p class="subtitle">// Создание QR-кода из текста или ссылки</p>
+    <div class="card" style="max-width:500px;">
+      <label>Текст или URL</label>
+      <input type="text" id="qrText" placeholder="https://example.com" value="https://example.com">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="genQR()">Генерировать QR</button>
+      </div>
+      <div class="qr-container" style="margin-top:20px;">
+        <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://example.com" alt="QR Code">
+        <div class="btn-group" style="justify-content:center;">
+          <a class="btn btn-outline" id="qrDownload" href="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://example.com" download="qr.png">⬇ Скачать</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HASH ==================== -->
+  <div class="tool-page" id="tool-hash">
+    <h2>#️⃣ Хеш генератор</h2>
+    <p class="subtitle">// Вычисление хешей SHA-1, SHA-256, SHA-384, SHA-512</p>
+    <div class="card">
+      <label>Текст</label>
+      <textarea id="hashInput" rows="3" placeholder="Введите текст для хеширования..." oninput="calcHashes()"></textarea>
+      <div class="hash-tabs">
+        <button class="hash-tab active" onclick="showHash('sha1',this)">SHA-1</button>
+        <button class="hash-tab" onclick="showHash('sha256',this)">SHA-256</button>
+        <button class="hash-tab" onclick="showHash('sha384',this)">SHA-384</button>
+        <button class="hash-tab" onclick="showHash('sha512',this)">SHA-512</button>
+      </div>
+      <div class="result-box" id="hashOutput">
+        <button class="copy-btn" onclick="copyText('hashOutput')">📋</button>
+        Введите текст...
+      </div>
+      <div id="allHashes" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TODO ==================== -->
+  <div class="tool-page" id="tool-todo">
+    <h2>✅ To-Do лист</h2>
+    <p class="subtitle">// Список задач с сохранением в браузере</p>
+    <div class="card">
+      <div class="todo-input-row">
+        <input type="text" id="todoInput" placeholder="Новая задача..." onkeypress="if(event.key==='Enter')addTodo()">
+        <button class="btn btn-primary" onclick="addTodo()">+</button>
+      </div>
+      <ul class="todo-list" id="todoList"></ul>
+      <div class="flex-between" style="margin-top:10px;">
+        <span style="color:var(--text2);font-size:13px;" id="todoCount">0 задач</span>
+        <button class="btn btn-outline" onclick="clearDoneTodos()">Удалить выполненные</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== NOTES ==================== -->
+  <div class="tool-page" id="tool-notes">
+    <h2>📒 Заметки</h2>
+    <p class="subtitle">// Быстрые заметки с автосохранением</p>
+    <div class="card">
+      <textarea class="notes-area" id="notesArea" placeholder="Пишите заметки здесь... Они сохранятся автоматически." oninput="saveNotes()"></textarea>
+      <div class="flex-between" style="margin-top:10px;">
+        <span style="color:var(--neon-green);font-size:13px;" id="notesSaved">⚡ Сохранено</span>
+        <button class="btn btn-outline" onclick="document.getElementById('notesArea').value='';saveNotes()">Очистить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JSON ==================== -->
+  <div class="tool-page" id="tool-json">
+    <h2>{ } JSON форматирование</h2>
+    <p class="subtitle">// Форматирование, валидация и минимизация JSON</p>
+    <div class="card">
+      <label>JSON</label>
+      <textarea id="jsonInput" rows="10" placeholder='{"name":"John","age":30}'></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="jsonFormat()">🎨 Форматировать</button>
+        <button class="btn btn-success" onclick="jsonMinify()">📦 Минимизировать</button>
+        <button class="btn btn-outline" onclick="jsonValidate()">✅ Валидировать</button>
+      </div>
+      <label style="margin-top:15px;">Результат</label>
+      <textarea id="jsonOutput" rows="10" readonly></textarea>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="copyText('jsonOutput')">📋 Копировать</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== PARTICLES =====
+(function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#ff2d95','#00d4ff','#b829e3','#39ff14','#fff700'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100 + '%';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.boxShadow = `0 0 6px ${p.style.background}`;
+    p.style.animationDuration = (8 + Math.random()*12) + 's';
+    p.style.animationDelay = Math.random()*10 + 's';
+    p.style.width = (2 + Math.random()*3) + 'px';
+    p.style.height = p.style.width;
+    container.appendChild(p);
+  }
+})();
+
+// ===== NAVIGATION =====
+function showTool(id) {
+  document.querySelectorAll('.tool-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tool-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (window.innerWidth <= 768) toggleSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('open');
+}
+
+// ===== CALCULATOR =====
+let calcExpr = '';
+function calcInput(v) { calcExpr += v; document.getElementById('calcExpr').textContent = calcExpr; }
+function calcClear() { calcExpr = ''; document.getElementById('calcExpr').textContent = ''; document.getElementById('calcValue').textContent = '0'; }
+function calcEval() {
+  try {
+    let r = Function('"use strict"; return (' + calcExpr + ')')();
+    document.getElementById('calcValue').textContent = parseFloat(r.toFixed(10));
+    calcExpr = String(r);
+  } catch(e) { document.getElementById('calcValue').textContent = 'Ошибка'; calcExpr = ''; }
+}
+
+// ===== PERCENT =====
+function calcPercent() { let x=+document.getElementById('pctX').value,y=+document.getElementById('pctY').value; document.getElementById('pctResult').textContent=x+'% от '+y+' = '+(x/100*y); }
+function calcPercentOf() { let a=+document.getElementById('pctA').value,b=+document.getElementById('pctB').value; document.getElementById('pctResult2').textContent=a+' — это '+((a/b*100).toFixed(2))+'% от '+b; }
+function calcPercentChange() { let f=+document.getElementById('pctFrom').value,t=+document.getElementById('pctTo').value,ch=((t-f)/Math.abs(f)*100).toFixed(2); document.getElementById('pctResult3').textContent='Изменение: '+(ch>0?'+':'')+ch+'%'; }
+function calcPctAdd() { let n=+document.getElementById('pctNum').value,r=+document.getElementById('pctRate').value; document.getElementById('pctResult4').textContent=n+' + '+r+'% = '+(n*(1+r/100)); }
+function calcPctSub() { let n=+document.getElementById('pctNum').value,r=+document.getElementById('pctRate').value; document.getElementById('pctResult4').textContent=n+' − '+r+'% = '+(n*(1-r/100)); }
+
+// ===== BMI =====
+function calcBMI() {
+  let h=+document.getElementById('bmiH').value/100,w=+document.getElementById('bmiW').value;
+  if(!h||!w) return;
+  let bmi=w/(h*h);
+  let cat=bmi<16?'Сильный недобор':bmi<18.5?'Недостаточный вес':bmi<25?'Норма ✓':bmi<30?'Избыточный вес':bmi<35?'Ожирение I':bmi<40?'Ожирение II':'Ожирение III';
+  let pct=Math.min(100,Math.max(0,(bmi-16)/(40-16)*100));
+  document.getElementById('bmiMarker').style.left=pct+'%';
+  document.getElementById('bmiResult').textContent='ИМТ: '+bmi.toFixed(1)+' — '+cat;
+}
+
+// ===== AGE =====
+function calcAge() {
+  let d=new Date(document.getElementById('ageDate').value);
+  if(isNaN(d)) return;
+  let now=new Date(),y=now.getFullYear()-d.getFullYear(),m=now.getMonth()-d.getMonth(),dd=now.getDate()-d.getDate();
+  if(dd<0){m--;dd+=30;} if(m<0){y--;m+=12;}
+  document.getElementById('ageResult').textContent=`${y} лет, ${m} мес, ${dd} дн\nВсего дней: ${Math.floor((now-d)/86400000).toLocaleString()}`;
+}
+
+// ===== NUMBER SYSTEMS =====
+function convertNum() {
+  let v=document.getElementById('numInput').value.trim(),base=+document.getElementById('numFrom').value;
+  try {
+    let n=parseInt(v,base);
+    if(isNaN(n)){document.getElementById('numResult').textContent='Неверное число';return;}
+    document.getElementById('numResult').innerHTML=`DEC: ${n}\nBIN: ${n.toString(2)}\nHEX: ${n.toString(16).toUpperCase()}\nOCT: ${n.toString(8)}`;
+  } catch(e) { document.getElementById('numResult').textContent='Ошибка'; }
+}
+
+// ===== UNIT CONVERTER =====
+const units={length:{mm:.001,cm:.01,m:1,km:1000,inch:.0254,foot:.3048,yard:.9144,mile:1609.344},weight:{mg:.000001,g:.001,kg:1,ton:1000,oz:.0283495,lb:.453592},speed:{'m/s':1,'km/h':.277778,'mph':.44704,'knot':.514444},volume:{ml:.001,l:1,'gal':3.78541,'cup':.236588,'tbsp':.0147868,'tsp':.00492892},data:{B:1,KB:1024,MB:1048576,GB:1073741824,TB:1099511627776}};
+function updateUnits() { let cat=document.getElementById('unitCat').value,keys=cat==='temp'?['°C','°F','K']:Object.keys(units[cat]); let opts=keys.map(k=>`<option value="${k}">${k}</option>`).join(''); document.getElementById('unitFrom').innerHTML=opts; document.getElementById('unitTo').innerHTML=opts; if(keys.length>1)document.getElementById('unitTo').selectedIndex=1; }
+updateUnits();
+function convertUnit() {
+  let cat=document.getElementById('unitCat').value,from=document.getElementById('unitFrom').value,to=document.getElementById('unitTo').value,val=+document.getElementById('unitVal').value;
+  if(cat==='temp'){let c=from==='°C'?val:from==='°F'?(val-32)*5/9:val-273.15;let r=to==='°C'?c:to==='°F'?c*9/5+32:c+273.15;document.getElementById('unitResult').textContent=val+' '+from+' = '+parseFloat(r.toFixed(6))+' '+to;}
+  else{let base=val*units[cat][from],r=base/units[cat][to];document.getElementById('unitResult').textContent=val+' '+from+' = '+parseFloat(r.toFixed(8))+' '+to;}
+}
+
+// ===== COLOR =====
+function updateColor(hex,r,g,b) {
+  document.getElementById('colorPreview').style.background=hex;
+  document.getElementById('colorPreview').style.boxShadow=`0 0 30px ${hex}40`;
+  document.getElementById('colorHex').value=hex;
+  document.getElementById('colorR').value=r;document.getElementById('colorG').value=g;document.getElementById('colorB').value=b;
+  let [h,s,l]=rgbToHsl(r,g,b);
+  document.getElementById('colorH').value=h;document.getElementById('colorS').value=s;document.getElementById('colorL').value=l;
+  document.getElementById('colorInfo').textContent=`HEX: ${hex}\nRGB: rgb(${r}, ${g}, ${b})\nHSL: hsl(${h}, ${s}%, ${l}%)`;
+}
+function colorFromHex() { let hex=document.getElementById('colorHex').value; if(/^#[0-9a-fA-F]{6}$/.test(hex)) { let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); updateColor(hex,r,g,b); } }
+function colorFromRGB() { let r=+document.getElementById('colorR').value,g=+document.getElementById('colorG').value,b=+document.getElementById('colorB').value; let hex='#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); updateColor(hex,r,g,b); }
+function colorFromHSL() { let h=+document.getElementById('colorH').value,s=+document.getElementById('colorS').value,l=+document.getElementById('colorL').value; let [r,g,b]=hslToRgb(h,s,l); let hex='#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); updateColor(hex,r,g,b); }
+function colorFromPicker() { let hex=document.getElementById('colorPicker').value; let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); updateColor(hex,r,g,b); }
+function rgbToHsl(r,g,b) { r/=255;g/=255;b/=255; let max=Math.max(r,g,b),min=Math.min(r,g,b),h,s,l=(max+min)/2; if(max===min){h=s=0;}else{let d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}} return [Math.round(h*360),Math.round(s*100),Math.round(l*100)]; }
+function hslToRgb(h,s,l) { h/=360;s/=100;l/=100; let r,g,b; if(s===0){r=g=b=l;}else{const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};let q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);} return [Math.round(r*255),Math.round(g*255),Math.round(b*255)]; }
+
+// ===== BASE64 =====
+function b64Encode() { try{document.getElementById('b64Output').value=btoa(unescape(encodeURIComponent(document.getElementById('b64Input').value)));}catch(e){document.getElementById('b64Output').value='Ошибка кодирования';} }
+function b64Decode() { try{document.getElementById('b64Output').value=decodeURIComponent(escape(atob(document.getElementById('b64Input').value)));}catch(e){document.getElementById('b64Output').value='Ошибка декодирования';} }
+
+// ===== URL =====
+function urlEncode() { document.getElementById('urlOutput').value=encodeURIComponent(document.getElementById('urlInput').value); }
+function urlDecode() { document.getElementById('urlOutput').value=decodeURIComponent(document.getElementById('urlInput').value); }
+
+// ===== TEXT TOOLS =====
+function updateTextStats() { let t=document.getElementById('textInput').value; document.getElementById('statChars').textContent=t.length; document.getElementById('statWords').textContent=t.trim()?t.trim().split(/\s+/).length:0; document.getElementById('statLines').textContent=t?t.split('\n').length:0; document.getElementById('statSent').textContent=t?(t.match(/[.!?]+/g)||[]).length:0; }
+function textTransform(type) {
+  let t=document.getElementById('textInput').value;
+  switch(type){case'upper':t=t.toUpperCase();break;case'lower':t=t.toLowerCase();break;case'title':t=t.replace(/\w\S*/g,w=>w[0].toUpperCase()+w.slice(1).toLowerCase());break;case'sentence':t=t.toLowerCase().replace(/(^\s*|[.!?]\s+)(\w)/g,(m,p,c)=>p+c.toUpperCase());break;case'reverse':t=t.split('').reverse().join('');break;case'trim':t=t.replace(/\s+/g,' ').trim();break;case'slug':t=t.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_]+/g,'-').replace(/^-+|-+$/g,'');break;}
+  document.getElementById('textOutput').value=t;
+}
+
+// ===== LOREM =====
+const loremWords='lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+function genLorem() {
+  let count=+document.getElementById('loremCount').value,type=document.getElementById('loremType').value,result='';
+  if(type==='words'){for(let i=0;i<count;i++)result+=loremWords[Math.floor(Math.random()*loremWords.length)]+' ';result=result.trim();}
+  else if(type==='sentences'){for(let i=0;i<count;i++){let len=8+Math.floor(Math.random()*12),sent=[];for(let j=0;j<len;j++)sent.push(loremWords[Math.floor(Math.random()*loremWords.length)]);sent[0]=sent[0][0].toUpperCase()+sent[0].slice(1);result+=sent.join(' ')+' ';}}
+  else{for(let i=0;i<count;i++){let sCount=3+Math.floor(Math.random()*4),para='';for(let j=0;j<sCount;j++){let len=8+Math.floor(Math.random()*12),sent=[];for(let k=0;k<len;k++)sent.push(loremWords[Math.floor(Math.random()*loremWords.length)]);sent[0]=sent[0][0].toUpperCase()+sent[0].slice(1);para+=sent.join(' ')+'. ';}result+=para.trim()+'\n\n';}}
+  document.getElementById('loremOutput').textContent=result.trim();
+}
+
+// ===== MARKDOWN =====
+function renderMD() {
+  let md=document.getElementById('mdInput').value;
+  let html=md.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/`(.+?)`/g,'<code style="background:rgba(5,5,16,.9);padding:2px 6px;border-radius:4px;font-size:13px;border:1px solid var(--neon-green);color:var(--neon-green);">$1</code>').replace(/^> (.+)$/gm,'<blockquote style="border-left:3px solid var(--neon-purple);padding-left:12px;color:var(--text2);margin:8px 0;">$1</blockquote>').replace(/^- (.+)$/gm,'<li style="margin-left:20px;">$1</li>').replace(/\n/g,'<br>');
+  document.getElementById('mdPreview').innerHTML=html;
+}
+
+// ===== TIMER =====
+let timerInterval=null,timerStartMs=0,timerElapsed=0,timerRunning=false;
+function timerStart() {
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerStartBtn').textContent='▶ Старт';document.getElementById('timerDisplay').className='timer-display paused';}
+  else{timerStartMs=Date.now()-timerElapsed;timerInterval=setInterval(timerUpdate,10);timerRunning=true;document.getElementById('timerStartBtn').textContent='⏸ Пауза';document.getElementById('timerDisplay').className='timer-display running';}
+}
+function timerUpdate() { timerElapsed=Date.now()-timerStartMs; document.getElementById('timerDisplay').textContent=formatMs(timerElapsed); }
+function timerLap() {
+  if(!timerRunning) return;
+  let laps=document.getElementById('laps'),n=laps.children.length+1;
+  let div=document.createElement('div');
+  div.style.cssText='padding:6px 12px;background:rgba(5,5,16,.8);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;font-size:13px;display:flex;justify-content:space-between;';
+  div.innerHTML=`<span style="color:var(--neon-pink);">Круг ${n}</span><span style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);text-shadow:0 0 8px rgba(0,212,255,.5);">${formatMs(timerElapsed)}</span>`;
+  laps.prepend(div);
+}
+function timerReset() { clearInterval(timerInterval);timerRunning=false;timerElapsed=0;document.getElementById('timerDisplay').textContent='00:00:00.000';document.getElementById('timerDisplay').className='timer-display';document.getElementById('timerStartBtn').textContent='▶ Старт';document.getElementById('laps').innerHTML=''; }
+function formatMs(ms) { let h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0'),ml=String(ms%1000).padStart(3,'0'); return `${h}:${m}:${s}.${ml}`; }
+
+// ===== POMODORO =====
+let pomoInterval=null,pomoTime=25*60,pomoRunning=false,pomoIsWork=true,pomoSessions=0;
+function pomoToggle() {
+  if(pomoRunning){clearInterval(pomoInterval);pomoRunning=false;document.getElementById('pomoStartBtn').textContent='▶ Старт';}
+  else{pomoRunning=true;document.getElementById('pomoStartBtn').textContent='⏸ Пауза';
+    pomoInterval=setInterval(()=>{pomoTime--;if(pomoTime<=0){if(pomoIsWork){pomoSessions++;pomoIsWork=false;pomoTime=+document.getElementById('pomoBreak').value*60;document.getElementById('pomoLabel').textContent='☕ ВРЕМЯ ОТДЫХА';document.getElementById('pomoSessions').textContent=`Завершено: ${pomoSessions} сессий`;document.getElementById('pomoDisplay').style.color='var(--neon-green)';}else{pomoIsWork=true;pomoTime=+document.getElementById('pomoWork').value*60;document.getElementById('pomoLabel').textContent='⚡ ВРЕМЯ РАБОТАТЬ';document.getElementById('pomoDisplay').style.color='var(--neon-pink)';}}let m=String(Math.floor(pomoTime/60)).padStart(2,'0'),s=String(pomoTime%60).padStart(2,'0');document.getElementById('pomoDisplay').textContent=m+':'+s;},1000);}
+}
+function pomoReset() { clearInterval(pomoInterval);pomoRunning=false;pomoIsWork=true;pomoTime=+document.getElementById('pomoWork').value*60;document.getElementById('pomoDisplay').textContent=String(Math.floor(pomoTime/60)).padStart(2,'0')+':00';document.getElementById('pomoDisplay').style.color='var(--neon-pink)';document.getElementById('pomoLabel').textContent='⚡ ВРЕМЯ РАБОТАТЬ';document.getElementById('pomoStartBtn').textContent='▶ Старт'; }
+
+// ===== UNIX TIME =====
+function updateUnixNow() { let now=Date.now(); document.getElementById('unixNow').textContent=now; document.getElementById('unixNowDate').textContent=new Date().toLocaleString('ru-RU'); }
+setInterval(updateUnixNow,1000); updateUnixNow();
+function unixToDate() { let ts=+document.getElementById('unixInput').value; document.getElementById('unixDateResult').textContent=new Date(ts*1000).toLocaleString('ru-RU'); }
+function dateToUnix() { let d=new Date(document.getElementById('unixDateInput').value); document.getElementById('unixTsResult').textContent=Math.floor(d.getTime()/1000); }
+
+// ===== PASSWORD =====
+function genPassword() {
+  let len=+document.getElementById('pwLen').value,chars='';
+  if(document.getElementById('pwUpper').checked)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(document.getElementById('pwLower').checked)chars+='abcdefghijklmnopqrstuvwxyz';
+  if(document.getElementById('pwNum').checked)chars+='0123456789';
+  if(document.getElementById('pwSym').checked)chars+='!@#$%^&*()_+-=[]{}|;:,.<>?';
+  if(!chars){document.getElementById('pwResult').textContent='Выберите хотя бы один набор символов';return;}
+  let pw='';for(let i=0;i<len;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('pwResult').textContent=pw;
+  let strength=Math.min(100,(chars.length*len*0.5)),bar=document.getElementById('pwStrength');
+  bar.style.width=strength+'%';bar.style.background=strength<30?'var(--neon-pink)':strength<60?'var(--neon-yellow)':'var(--neon-green)';
+}
+
+// ===== RANDOM =====
+function genRandom() { let min=+document.getElementById('randMin').value,max=+document.getElementById('randMax').value,count=+document.getElementById('randCount').value,results=[]; for(let i=0;i<count;i++)results.push(Math.floor(Math.random()*(max-min+1))+min); document.getElementById('randResult').textContent=results.join(', '); }
+
+// ===== UUID =====
+function genUUID() { let count=+document.getElementById('uuidCount').value,uuids=[]; for(let i=0;i<count;i++){uuids.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{let r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);}));} document.getElementById('uuidResult').textContent=uuids.join('\n'); }
+
+// ===== QR =====
+function genQR() { let text=encodeURIComponent(document.getElementById('qrText').value),url=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${text}`; document.getElementById('qrImage').src=url; document.getElementById('qrDownload').href=url; }
+
+// ===== HASH =====
+let currentHash='sha1';
+async function calcHashes() {
+  let text=document.getElementById('hashInput').value;
+  if(!text){document.getElementById('hashOutput').textContent='Введите текст...';return;}
+  let enc=new TextEncoder().encode(text),hashes={};
+  for(let algo of ['SHA-1','SHA-256','SHA-384','SHA-512']){let buf=await crypto.subtle.digest(algo,enc);let hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');hashes[algo.toLowerCase().replace('-','')]=hex;}
+  document.getElementById('hashOutput').textContent=hashes[currentHash]||'';
+  let allHtml='';for(let [k,v] of Object.entries(hashes)){allHtml+=`<div style="margin-bottom:6px;padding:8px;background:rgba(5,5,16,.5);border-radius:6px;"><span style="color:var(--neon-blue);font-size:11px;text-transform:uppercase;font-family:'Orbitron',sans-serif;">${k}</span><br><span style="font-size:12px;word-break:break-all;color:var(--text);">${v}</span></div>`;}
+  document.getElementById('allHashes').innerHTML=allHtml;
+}
+function showHash(algo,btn) { currentHash=algo; document.querySelectorAll('.hash-tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); calcHashes(); }
+
+// ===== TODO =====
+let todos=JSON.parse(localStorage.getItem('neon_todos')||'[]');
+function renderTodos() {
+  let list=document.getElementById('todoList'); list.innerHTML='';
+  todos.forEach((t,i)=>{let li=document.createElement('li');li.className=t.done?'done':'';li.innerHTML=`<input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleTodo(${i})"><span class="todo-text">${t.text}</span><button class="todo-del" onclick="delTodo(${i})">✕</button>`;list.appendChild(li);});
+  let active=todos.filter(t=>!t.done).length;
+  document.getElementById('todoCount').textContent=`${active} активных из ${todos.length}`;
+  localStorage.setItem('neon_todos',JSON.stringify(todos));
+}
+function addTodo() { let text=document.getElementById('todoInput').value.trim(); if(!text) return; todos.push({text,done:false}); document.getElementById('todoInput').value=''; renderTodos(); }
+function toggleTodo(i) { todos[i].done=!todos[i].done; renderTodos(); }
+function delTodo(i) { todos.splice(i,1); renderTodos(); }
+function clearDoneTodos() { todos=todos.filter(t=>!t.done); renderTodos(); }
+renderTodos();
+
+// ===== NOTES =====
+function saveNotes() { localStorage.setItem('neon_notes',document.getElementById('notesArea').value); document.getElementById('notesSaved').textContent='⚡ Сохранено'; }
+document.getElementById('notesArea').value=localStorage.getItem('neon_notes')||'';
+
+// ===== JSON =====
+function jsonFormat() { try{let obj=JSON.parse(document.getElementById('jsonInput').value);document.getElementById('jsonOutput').value=JSON.stringify(obj,null,2);}catch(e){document.getElementById('jsonOutput').value='❌ Ошибка: '+e.message;} }
+function jsonMinify() { try{let obj=JSON.parse(document.getElementById('jsonInput').value);document.getElementById('jsonOutput').value=JSON.stringify(obj);}catch(e){document.getElementById('jsonOutput').value='❌ Ошибка: '+e.message;} }
+function jsonValidate() { try{JSON.parse(document.getElementById('jsonInput').value);document.getElementById('jsonOutput').value='✅ JSON валиден!';}catch(e){document.getElementById('jsonOutput').value='❌ Ошибка: '+e.message;} }
+
+// ===== COPY =====
+function copyText(id) { let text=document.getElementById(id).textContent||document.getElementById(id).value; navigator.clipboard.writeText(text).then(()=>{let btn=document.getElementById(id).querySelector('.copy-btn');if(btn){btn.textContent='✓';setTimeout(()=>btn.textContent='📋',1500);}}); }
+function copyEl(id) { navigator.clipboard.writeText(document.getElementById(id).textContent); }
+</script>
+</body>
+</html>
